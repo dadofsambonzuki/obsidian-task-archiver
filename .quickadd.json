@@ -1,0 +1,34 @@
+{
+  "name": "Task Archiver",
+  "description": "Automatically archive completed tasks from Today.md to daily archive files based on completion dates",
+  "author": "nathan-day",
+  "version": "1.0.0",
+  "minQuickAddVersion": "0.13.0",
+  "choices": [
+    {
+      "id": "archive-completed-tasks",
+      "name": "Archive Completed Tasks",
+      "type": "Macro",
+      "command": true,
+      "macro": {
+        "name": "Archive Completed Tasks",
+        "commands": [
+          {
+            "name": "archiveCompleted",
+            "type": "UserScript",
+            "id": "archive-script",
+            "settings": {
+              "path": "Scripts/archiveCompleted.js"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "Scripts/archiveCompleted.js",
+      "content": "module.exports = async (params) => {\n    const { app } = params;\n    const todayFile = \"Tasks/Today.md\";\n    const archiveBase = \"Tasks/Archive\";\n\n    // Calculate ISO week number for a given date\n    const getWeekNumber = (date) => {\n        const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));\n        const dayNum = d.getUTCDay() || 7;\n        d.setUTCDate(d.getUTCDate() + 4 - dayNum);\n        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));\n        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);\n    };\n\n    // Parse completion date from task line (✅ YYYY-MM-DD)\n    const parseCompletionDate = (line) => {\n        const match = line.match(/✅\\s*(\\d{4})-(\\d{2})-(\\d{2})/);\n        if (match) {\n            return {\n                year: match[1],\n                month: match[2],\n                day: match[3],\n                dateStr: `${match[1]}-${match[2]}-${match[3]}`,\n                date: new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]))\n            };\n        }\n        return null;\n    };\n\n    // Read Today.md\n    const todayTFile = app.vault.getAbstractFileByPath(todayFile);\n    if (!todayTFile) {\n        new Notice(\"Could not find Tasks/Today.md\");\n        return;\n    }\n\n    const content = await app.vault.read(todayTFile);\n    const lines = content.split('\\n');\n\n    // Separate completed and incomplete tasks\n    const completedTasks = [];\n    const remainingLines = [];\n\n    for (const line of lines) {\n        if (line.match(/^- \\[x\\]/i)) {\n            completedTasks.push(line);\n        } else {\n            remainingLines.push(line);\n        }\n    }\n\n    if (completedTasks.length === 0) {\n        new Notice(\"No completed tasks to archive\");\n        return;\n    }\n\n    // Group completed tasks by their completion date\n    const tasksByDate = new Map();\n    const now = new Date();\n    const defaultYear = String(now.getFullYear());\n    const defaultMonth = String(now.getMonth() + 1).padStart(2, '0');\n    const defaultDay = String(now.getDate()).padStart(2, '0');\n    const defaultDateStr = `${defaultYear}-${defaultMonth}-${defaultDay}`;\n\n    for (const task of completedTasks) {\n        const parsedDate = parseCompletionDate(task);\n        \n        if (parsedDate) {\n            // Use the completion date from the task\n            const dateKey = parsedDate.dateStr;\n            if (!tasksByDate.has(dateKey)) {\n                tasksByDate.set(dateKey, {\n                    tasks: [],\n                    year: parsedDate.year,\n                    date: parsedDate.date\n                });\n            }\n            tasksByDate.get(dateKey).tasks.push(task);\n        } else {\n            // Fallback to today's date if no completion date found\n            if (!tasksByDate.has(defaultDateStr)) {\n                tasksByDate.set(defaultDateStr, {\n                    tasks: [],\n                    year: defaultYear,\n                    date: now\n                });\n            }\n            tasksByDate.get(defaultDateStr).tasks.push(task);\n        }\n    }\n\n    // Archive tasks to their respective dates\n    let archivedCount = 0;\n    for (const [dateStr, dateInfo] of tasksByDate) {\n        const { tasks, year, date } = dateInfo;\n        const weekNum = String(getWeekNumber(date)).padStart(2, '0');\n        const archivePath = `${archiveBase}/${year}/${weekNum}/${dateStr}.md`;\n\n        // Ensure archive folder exists\n        const folderPath = `${archiveBase}/${year}/${weekNum}`;\n        if (!app.vault.getAbstractFileByPath(folderPath)) {\n            await app.vault.createFolder(folderPath);\n        }\n\n        // Get or create archive file\n        let archiveTFile = app.vault.getAbstractFileByPath(archivePath);\n        let existingContent = \"\";\n\n        if (archiveTFile) {\n            existingContent = await app.vault.read(archiveTFile);\n            if (existingContent && !existingContent.endsWith('\\n')) {\n                existingContent += '\\n';\n            }\n        }\n\n        // Append tasks to archive file\n        const newArchiveContent = existingContent + tasks.join('\\n') + '\\n';\n\n        if (archiveTFile) {\n            await app.vault.modify(archiveTFile, newArchiveContent);\n        } else {\n            await app.vault.create(archivePath, tasks.join('\\n') + '\\n');\n        }\n\n        archivedCount += tasks.length;\n    }\n\n    // Update Today.md (remove completed tasks)\n    const newTodayContent = remainingLines.join('\\n');\n    await app.vault.modify(todayTFile, newTodayContent);\n\n    const datesArchived = Array.from(tasksByDate.keys()).join(', ');\n    new Notice(`Archived ${archivedCount} task(s) to ${tasksByDate.size} date(s): ${datesArchived}`);\n};"
+    }
+  ]
+}

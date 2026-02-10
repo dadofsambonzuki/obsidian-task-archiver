@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Obsidian
+.obsidian/
+
+# Node (if we add build tools later)
+node_modules/
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+*.test.js
+test-vault/
