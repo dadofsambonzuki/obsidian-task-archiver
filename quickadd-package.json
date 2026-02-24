@@ -1,0 +1,24 @@
+{
+  "version": "2.10.0",
+  "choices": [
+    {
+      "id": "archive-completed-tasks",
+      "name": "Archive Completed Tasks",
+      "type": "Macro",
+      "command": true,
+      "macro": {
+        "name": "Archive Completed Tasks",
+        "commands": [
+          {
+            "name": "archiveCompleted",
+            "type": "UserScript",
+            "id": "archive-script",
+            "settings": {
+              "path": "Scripts/archiveCompleted.js"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

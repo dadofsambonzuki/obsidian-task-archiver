@@ -20,12 +20,19 @@ A QuickAdd macro that automatically archives completed tasks from your daily tas
 
 ### Method 1: Import QuickAdd Package (Recommended)
 
-1. Download the `.quickadd.json` file from this repository
-2. In Obsidian, open **Settings** → **QuickAdd**
-3. Click **⚙️ (Manage Macros)** or scroll to find **Import from File**
-4. Select the downloaded `.quickadd.json` file
-5. QuickAdd will automatically create the macro and install the script
-6. **Assign a hotkey**: Settings → Hotkeys → search "Archive" → assign your preferred shortcut (e.g., `Ctrl+Shift+A`)
+1. Download `quickadd-package.json` from this repository
+2. Open the file and copy its entire contents
+3. In Obsidian, go to **Settings** → **QuickAdd**
+4. Click **Import package**
+5. Paste the JSON content into the text box
+6. QuickAdd will show you what will be imported:
+   - The "Archive Completed Tasks" macro choice
+   - You can choose to Import, Overwrite, or Skip
+7. Click **Import package**
+8. Create the Scripts folder and add the script:
+   - Create folder `Scripts` in your vault root
+   - Copy `archiveCompleted.js` to `Scripts/archiveCompleted.js`
+9. **Assign a hotkey**: Settings → Hotkeys → search "Archive" → assign your preferred shortcut (e.g., `Ctrl+Shift+A`)
 
 ### Method 2: Manual Setup
 
