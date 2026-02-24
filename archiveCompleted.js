@@ -1,7 +1,13 @@
 module.exports = async (params) => {
     const { app } = params;
-    const todayFile = "Tasks/Today.md";
     const archiveBase = "Tasks/Archive";
+
+    // Get the currently active file
+    const activeFile = app.workspace.getActiveFile();
+    if (!activeFile) {
+        new Notice("No active file found. Please open a note first.");
+        return;
+    }
 
     // Calculate ISO week number for a given date
     const getWeekNumber = (date) => {
@@ -27,14 +33,8 @@ module.exports = async (params) => {
         return null;
     };
 
-    // Read Today.md
-    const todayTFile = app.vault.getAbstractFileByPath(todayFile);
-    if (!todayTFile) {
-        new Notice("Could not find Tasks/Today.md");
-        return;
-    }
-
-    const content = await app.vault.read(todayTFile);
+    // Read the active file
+    const content = await app.vault.read(activeFile);
     const lines = content.split('\n');
 
     // Separate completed and incomplete tasks
@@ -125,10 +125,10 @@ module.exports = async (params) => {
         archivedCount += tasks.length;
     }
 
-    // Update Today.md (remove completed tasks)
-    const newTodayContent = remainingLines.join('\n');
-    await app.vault.modify(todayTFile, newTodayContent);
+    // Update the active file (remove completed tasks)
+    const newContent = remainingLines.join('\n');
+    await app.vault.modify(activeFile, newContent);
 
     const datesArchived = Array.from(tasksByDate.keys()).join(', ');
-    new Notice(`Archived ${archivedCount} task(s) to ${tasksByDate.size} date(s): ${datesArchived}`);
+    new Notice(`Archived ${archivedCount} task(s) from ${activeFile.basename} to ${tasksByDate.size} date(s): ${datesArchived}`);
 };

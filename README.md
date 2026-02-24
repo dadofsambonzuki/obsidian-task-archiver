@@ -1,6 +1,6 @@
 # Obsidian Task Archiver
 
-A QuickAdd macro that automatically archives completed tasks from your daily task file to date-specific archive files.
+A QuickAdd macro that automatically archives completed tasks from any note to date-specific archive files.
 
 ## Features
 
@@ -45,13 +45,14 @@ A QuickAdd macro that automatically archives completed tasks from your daily tas
 
 ## Usage
 
-1. Complete tasks in your `Tasks/Today.md` file (check the box)
-2. Press your assigned hotkey (default: `Ctrl+Shift+A`)
-3. All completed tasks are automatically moved to their respective date files in `Tasks/Archive/`
+1. Open any note containing tasks
+2. Complete tasks by checking the box (changes `[ ]` to `[x]`)
+3. Press your assigned hotkey (default: `Ctrl+Shift+A`)
+4. All completed tasks are automatically moved to their respective date files in `Tasks/Archive/`
 
 ### Example
 
-**Before (Tasks/Today.md):**
+**Before (any note with tasks):**
 ```markdown
 - [x] Task A ✅ 2026-02-03
 - [x] Task B ✅ 2026-02-04
@@ -62,7 +63,7 @@ A QuickAdd macro that automatically archives completed tasks from your daily tas
 **After running the macro:**
 - Tasks A and C → `Tasks/Archive/2026/06/2026-02-03.md`
 - Task B → `Tasks/Archive/2026/06/2026-02-04.md`
-- Task D stays in `Tasks/Today.md`
+- Task D stays in the original note
 
 ## Archive Structure
 
@@ -82,13 +83,14 @@ Tasks/
 
 ## Configuration
 
-The script uses these default paths (edit the script to customize):
-- **Source file**: `Tasks/Today.md`
+The script archives to this location (edit the script to customize):
 - **Archive base**: `Tasks/Archive`
+
+**Works on any note**: The script automatically detects the currently active/open note and archives completed tasks from it.
 
 ## How It Works
 
-1. **Reads** your source task file (e.g., `Tasks/Today.md`)
+1. **Detects** the currently active/open note
 2. **Identifies** completed tasks (lines starting with `- [x]`)
 3. **Parses** the completion date from the `✅ YYYY-MM-DD` marker
 4. **Groups** tasks by their completion date
@@ -99,9 +101,9 @@ The script uses these default paths (edit the script to customize):
 
 ## Troubleshooting
 
-**"Could not find Tasks/Today.md"**
-- Ensure your source file exists at `Tasks/Today.md`
-- Edit the script to match your file path
+**"No active file found"**
+- Make sure you have a note open before running the macro
+- Click in the editor to ensure the file is active
 
 **"User script not found"**
 - Make sure `archiveCompleted.js` is in the `Scripts` folder in your vault root
