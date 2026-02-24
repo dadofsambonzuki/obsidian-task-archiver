@@ -18,31 +18,30 @@ A QuickAdd macro that automatically archives completed tasks from your daily tas
 
 ## Installation
 
-### Method 1: Import QuickAdd Package (Recommended)
-
-1. Download `quickadd-package.json` from this repository
-2. Open the file and copy its entire contents
-3. In Obsidian, go to **Settings** → **QuickAdd**
-4. Click **Import package**
-5. Paste the JSON content into the text box
-6. QuickAdd will show you what will be imported:
-   - The "Archive Completed Tasks" macro choice
-   - You can choose to Import, Overwrite, or Skip
-7. Click **Import package**
-8. Create the Scripts folder and add the script:
-   - Create folder `Scripts` in your vault root
-   - Copy `archiveCompleted.js` to `Scripts/archiveCompleted.js`
-9. **Assign a hotkey**: Settings → Hotkeys → search "Archive" → assign your preferred shortcut (e.g., `Ctrl+Shift+A`)
-
-### Method 2: Manual Setup
+### Step 1: Install Script
 
 1. Create a folder `Scripts` in your vault root
 2. Copy `archiveCompleted.js` from this repo to `Scripts/archiveCompleted.js`
-3. In QuickAdd settings:
-   - Add a **Macro** choice named "Archive Completed Tasks"
-   - Configure it to use the `archiveCompleted` user script
-   - Enable it as a command
-4. Assign a hotkey in Settings → Hotkeys
+
+### Step 2: Configure QuickAdd
+
+1. Open **Settings** → **QuickAdd**
+2. In the text box at the top, type: `Archive Completed Tasks`
+3. Select **Macro** from the dropdown
+4. Click **Add Choice**
+5. Click the **cog icon (⚙️)** next to "Archive Completed Tasks"
+6. Click **Configure Macro**
+7. Select **User Scripts** from the dropdown
+8. Click **Add**
+9. Select `archiveCompleted` from the list
+10. Go back to QuickAdd main settings
+11. Click the **lightning bolt** icon next to "Archive Completed Tasks" to enable it as a command
+
+### Step 3: Assign Hotkey
+
+1. Go to **Settings** → **Hotkeys**
+2. Search for "Archive Completed Tasks"
+3. Assign your preferred shortcut (e.g., `Ctrl+Shift+A`)
 
 ## Usage
 
@@ -103,6 +102,10 @@ The script uses these default paths (edit the script to customize):
 **"Could not find Tasks/Today.md"**
 - Ensure your source file exists at `Tasks/Today.md`
 - Edit the script to match your file path
+
+**"User script not found"**
+- Make sure `archiveCompleted.js` is in the `Scripts` folder in your vault root
+- Check the file name matches exactly (case-sensitive)
 
 **Tasks not archiving**
 - Make sure you're using the Tasks plugin format: `- [x] Task text ✅ YYYY-MM-DD`
